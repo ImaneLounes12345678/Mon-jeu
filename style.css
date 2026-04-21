@@ -1,90 +1,104 @@
 :root {
-    --gold: #d4af37;
-    --dark: #0f0f1a;
-    --p1-color: #4CAF50;
-    --p2-color: #2196F3;
+    --gold: #f1c40f;
+    --dark: #05050a;
+    --p1-color: #00ff88;
+    --p2-color: #00d4ff;
+    --glass: rgba(255, 255, 255, 0.05);
 }
 
-body {
-    background: var(--dark);
-    color: white;
-    font-family: 'Arial', sans-serif;
-    margin: 0;
+body { 
+    background: var(--dark); 
+    color: white; 
+    font-family: 'Orbitron', sans-serif; 
+    margin: 0; 
     overflow: hidden;
+    background-image: radial-gradient(circle at center, #1a1a2e 0%, #05050a 100%);
 }
 
-.game-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
+/* Overlays (Accueil & Fin) */
+.overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(5, 5, 10, 0.95);
+    display: flex; flex-direction: column; justify-content: center;
+    align-items: center; z-index: 1000; transition: 0.5s;
 }
 
-/* Zone centrale (L'Oracle) */
-.oracle-zone {
-    height: 25%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0,0,0,0.5);
-    border-bottom: 2px solid var(--gold);
+.glow-text {
+    font-size: 4rem; color: var(--gold);
+    text-shadow: 0 0 20px var(--gold);
+    margin-bottom: 20px; animation: pulse 2s infinite;
 }
+
+.btn-main {
+    padding: 15px 40px; background: transparent; border: 2px solid var(--gold);
+    color: var(--gold); font-family: 'Orbitron'; cursor: pointer;
+    transition: 0.3s; letter-spacing: 2px;
+}
+
+.btn-main:hover { background: var(--gold); color: black; box-shadow: 0 0 30px var(--gold); }
+
+/* Oracle & Timer */
+.oracle-zone { height: 25%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
 #current-event {
-    background: linear-gradient(135deg, var(--gold), #f1c40f);
-    color: black;
-    padding: 15px 40px;
-    border-radius: 30px;
-    font-weight: bold;
-    font-size: 1.4rem;
-    box-shadow: 0 0 20px var(--gold);
+    padding: 20px 50px; border-radius: 50px; background: var(--glass);
+    border: 2px solid var(--gold); font-size: 1.5rem; text-align: center;
+    box-shadow: 0 0 30px rgba(241, 196, 15, 0.1);
 }
 
-/* Chrono */
-.timer-wrapper { width: 300px; height: 10px; background: #333; margin-top: 15px; border-radius: 5px; }
-#timer-bar { width: 100%; height: 100%; background: #e74c3c; border-radius: 5px; transition: width 0.1s linear; }
+.timer-wrapper { width: 400px; height: 6px; background: rgba(255,255,255,0.1); margin-top: 20px; border-radius: 3px; overflow: hidden; }
+#timer-bar { height: 100%; background: linear-gradient(to right, #e74c3c, var(--gold)); width: 100%; }
 
-/* Duel */
+/* Duel Zone */
 .duel-zone { display: flex; height: 75%; }
-.player-side { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 20px; transition: 0.5s; position: relative; }
+.player-side { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; transition: 0.5s; }
 
+.p1-title { color: var(--p1-color); text-shadow: 0 0 10px var(--p1-color); }
+.p2-title { color: var(--p2-color); text-shadow: 0 0 10px var(--p2-color); }
+
+.score-box { font-size: 1.2rem; margin: 15px 0; padding: 10px 20px; background: var(--glass); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); }
+.score-num { color: var(--gold); display: inline-block; transition: 0.3s; }
+
+/* Animation Pop du score */
+.pop { transform: scale(2); color: #fff; text-shadow: 0 0 15px var(--gold); }
+
+/* Boutons de pouvoirs */
+.btn-p {
+    padding: 10px 15px; margin: 5px; border: 1px solid rgba(255,255,255,0.2); 
+    background: transparent; color: white; cursor: pointer; font-family: 'Orbitron'; font-size: 0.7rem;
+}
+.btn-p:hover { background: white; color: black; }
+
+.btn-special { 
+    border-color: #9b59b6; color: #9b59b6; 
+    animation: glitch 0.3s infinite; 
+    box-shadow: 0 0 10px #9b59b6; 
+}
+
+/* Timeline */
 .timeline-scale {
-    width: 90%;
-    height: 200px;
-    margin: auto;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    background: linear-gradient(to right, transparent, var(--gold), transparent);
-    background-repeat: no-repeat; background-size: 100% 4px; background-position: center;
-    overflow-x: auto;
-    padding: 20px;
+    width: 95%; height: 250px; display: flex; align-items: center; gap: 15px;
+    padding: 20px; overflow-x: auto; border-top: 1px solid rgba(255,255,255,0.05);
 }
 
-/* Bulles (Design imp.avif) */
 .bubble {
-    min-width: 80px; height: 80px; background: white; border-radius: 50%;
-    border: 4px solid var(--gold); color: black; font-size: 0.8rem;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    min-width: 100px; height: 100px; background: var(--glass);
+    border: 2px solid var(--gold); border-radius: 15px;
+    display: flex; flex-direction: column; justify-content: center;
+    align-items: center; text-align: center; font-size: 0.7rem;
+    animation: slideIn 0.4s ease-out;
 }
-
-.bubble::after { content: ''; position: absolute; bottom: -30px; width: 2px; height: 30px; background: var(--gold); }
 
 .drop-zone {
-    min-width: 35px; height: 50px; border: 2px dashed #666; border-radius: 8px;
-    display: flex; justify-content: center; align-items: center; cursor: pointer; color: var(--gold);
+    min-width: 40px; height: 40px; border: 2px dashed rgba(255,255,255,0.2);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--gold); font-weight: bold;
 }
+.drop-zone:hover { border-color: var(--gold); background: rgba(241, 196, 15, 0.1); }
 
-.drop-zone:hover { background: rgba(212, 175, 55, 0.2); border-color: var(--gold); }
+/* Animations */
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+@keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes glitch { 0% { transform: translate(0); } 50% { transform: translate(-2px, 1px); } 100% { transform: translate(2px, -1px); } }
 
-/* Pouvoirs */
-.powers { margin-top: 10px; }
-button { cursor: pointer; padding: 8px 15px; border: none; border-radius: 5px; font-weight: bold; margin: 0 5px; }
-.btn-gel { background: #81ecec; }
-.btn-vol { background: #fdcb6e; }
-
-/* Effets */
-.frozen { filter: grayscale(1) blur(3px); pointer-events: none; }
-.shake { animation: shake 0.4s; }
-@keyframes shake { 0%, 100% {transform: scale(1);} 50% {transform: scale(1.1);} }
+.frozen { filter: blur(4px) grayscale(1); pointer-events: none; opacity: 0.5; }
