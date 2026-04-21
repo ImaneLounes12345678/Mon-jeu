@@ -1,23 +1,44 @@
 let currentEvent = null;
 let timelines = { P1: [], P2: [] };
 let scores = { P1: 0, P2: 0 };
-let timeLeft = 20;
+let streaks = { P1: 0, P2: 0 };
+let globalTime = 120; 
 let timerId = null;
+let isPaused = false;
 
-async function fetchEvent() {
-    const res = await fetch('get_event.php');
-    currentEvent = await res.json();
-    document.getElementById('current-event').innerText = currentEvent.titre;
-    startChrono();
+// Démarrage du jeu via le bouton
+function startGame() {
+    document.getElementById('start-screen').style.opacity = "0";
+    setTimeout(() => {
+        document.getElementById('start-screen').style.display = "none";
+        fetchEvent();
+        startGlobalTimer();
+    }, 500);
 }
 
-function startChrono() {
-    clearInterval(timerId);
-    timeLeft = 20;
+async function fetchEvent() {
+    try {
+        const res = await fetch('get_event.php');
+        currentEvent = await res.json();
+        document.getElementById('current-event').innerText = currentEvent.titre;
+    } catch (e) {
+        console.error("Erreur de chargement des données.");
+    }
+}
+
+function startGlobalTimer() {
+    if (timerId) clearInterval(timerId);
     timerId = setInterval(() => {
-        timeLeft -= 0.1;
-        document.getElementById('timer-bar').style.width = (timeLeft / 20) * 100 + "%";
-        if (timeLeft <= 0) fetchEvent();
+        if (!isPaused) {
+            globalTime -= 0.1;
+            const percentage = (globalTime / 120) * 100;
+            document.getElementById('timer-bar').style.width = percentage + "%";
+            
+            if (globalTime <= 0) {
+                clearInterval(timerId);
+                showEndScreen();
+            }
+        }
     }, 100);
 }
 
@@ -31,6 +52,12 @@ function render(pId) {
     scale.innerHTML += `<div class="drop-zone" onclick="jouer('${pId}', ${timelines[pId].length})">+</div>`;
 }
 
+function animateScore(pId) {
+    const scoreEl = document.getElementById(`score-${pId}`);
+    scoreEl.classList.add('pop');
+    setTimeout(() => scoreEl.classList.remove('pop'), 300);
+}
+
 function jouer(pId, index) {
     const list = timelines[pId];
     let ok = true;
@@ -40,14 +67,22 @@ function jouer(pId, index) {
     if (ok) {
         list.splice(index, 0, currentEvent);
         scores[pId]++;
+        streaks[pId]++;
+        
         document.getElementById(`score-${pId}`).innerText = scores[pId];
+        animateScore(pId);
+        
+        // Apparition du bouton spécial si 3 bonnes réponses de suite
+        if (streaks[pId] >= 3) {
+            document.getElementById(`btn-time-${pId}`).style.display = "inline-block";
+        }
+        
         render(pId);
-        fetchEvent(); // Élimine l'événement actuel pour l'autre joueur !
+        fetchEvent();
     } else {
-        const card = document.getElementById('current-event');
-        card.classList.add('shake');
-        setTimeout(() => card.classList.remove('shake'), 400);
-        alert("Faux ! L'événement retourne à l'Oracle.");
+        streaks[pId] = 0;
+        document.getElementById(`btn-time-${pId}`).style.display = "none";
+        alert("Faux ! La série est brisée.");
     }
 }
 
@@ -56,13 +91,19 @@ function pouvoir(type, lanceur) {
     if (type === 'gel') {
         document.getElementById(cible).classList.add('frozen');
         setTimeout(() => document.getElementById(cible).classList.remove('frozen'), 5000);
-    } else {
-        if (scores[cible] > 0) {
-            scores[cible]--; scores[lanceur]++;
-            document.getElementById(`score-P1`).innerText = scores.P1;
-            document.getElementById(`score-P2`).innerText = scores.P2;
-        }
+    } else if (type === 'temps') {
+        isPaused = true;
+        document.getElementById(`btn-time-${lanceur}`).style.display = "none";
+        streaks[lanceur] = 0;
+        setTimeout(() => isPaused = false, 8000); // Chrono stoppé 8 secondes
     }
 }
 
-window.onload = () => { fetchEvent(); render('P1'); render('P2'); };
+function showEndScreen() {
+    const winner = scores.P1 > scores.P2 ? "MAGE VERT TRIOMPHE" : "MAGE BLEU TRIOMPHE";
+    document.getElementById('winner-text').innerText = winner;
+    document.getElementById('final-scores').innerHTML = `<h2>SCORE: ${scores.P1} - ${scores.P2}</h2>`;
+    document.getElementById('end-screen').style.display = "flex";
+}
+
+window.onload = () => { render('P1'); render('P2'); };
