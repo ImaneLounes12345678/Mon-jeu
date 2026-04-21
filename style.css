@@ -1,0 +1,90 @@
+:root {
+    --gold: #d4af37;
+    --dark: #0f0f1a;
+    --p1-color: #4CAF50;
+    --p2-color: #2196F3;
+}
+
+body {
+    background: var(--dark);
+    color: white;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    overflow: hidden;
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Zone centrale (L'Oracle) */
+.oracle-zone {
+    height: 25%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0,0,0,0.5);
+    border-bottom: 2px solid var(--gold);
+}
+
+#current-event {
+    background: linear-gradient(135deg, var(--gold), #f1c40f);
+    color: black;
+    padding: 15px 40px;
+    border-radius: 30px;
+    font-weight: bold;
+    font-size: 1.4rem;
+    box-shadow: 0 0 20px var(--gold);
+}
+
+/* Chrono */
+.timer-wrapper { width: 300px; height: 10px; background: #333; margin-top: 15px; border-radius: 5px; }
+#timer-bar { width: 100%; height: 100%; background: #e74c3c; border-radius: 5px; transition: width 0.1s linear; }
+
+/* Duel */
+.duel-zone { display: flex; height: 75%; }
+.player-side { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 20px; transition: 0.5s; position: relative; }
+
+.timeline-scale {
+    width: 90%;
+    height: 200px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    background-repeat: no-repeat; background-size: 100% 4px; background-position: center;
+    overflow-x: auto;
+    padding: 20px;
+}
+
+/* Bulles (Design imp.avif) */
+.bubble {
+    min-width: 80px; height: 80px; background: white; border-radius: 50%;
+    border: 4px solid var(--gold); color: black; font-size: 0.8rem;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.bubble::after { content: ''; position: absolute; bottom: -30px; width: 2px; height: 30px; background: var(--gold); }
+
+.drop-zone {
+    min-width: 35px; height: 50px; border: 2px dashed #666; border-radius: 8px;
+    display: flex; justify-content: center; align-items: center; cursor: pointer; color: var(--gold);
+}
+
+.drop-zone:hover { background: rgba(212, 175, 55, 0.2); border-color: var(--gold); }
+
+/* Pouvoirs */
+.powers { margin-top: 10px; }
+button { cursor: pointer; padding: 8px 15px; border: none; border-radius: 5px; font-weight: bold; margin: 0 5px; }
+.btn-gel { background: #81ecec; }
+.btn-vol { background: #fdcb6e; }
+
+/* Effets */
+.frozen { filter: grayscale(1) blur(3px); pointer-events: none; }
+.shake { animation: shake 0.4s; }
+@keyframes shake { 0%, 100% {transform: scale(1);} 50% {transform: scale(1.1);} }

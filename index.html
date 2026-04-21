@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Chrono-Mage : Duel Final</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="oracle-zone">
+            <div id="current-event">L'Oracle réfléchit...</div>
+            <div class="timer-wrapper"><div id="timer-bar"></div></div>
+        </div>
+
+        <div class="duel-zone">
+            <div class="player-side" id="P1">
+                <h2 style="color: var(--p1-color)">Mage Vert (P1)</h2>
+                <div class="powers">
+                    <button class="btn-gel" onclick="pouvoir('gel', 'P1')">❄️ Gel P2</button>
+                    <button class="btn-vol" onclick="pouvoir('vol', 'P1')">⚡ Vol P2</button>
+                </div>
+                <div class="score">Prestige : <span id="score-P1">0</span></div>
+                <div class="timeline-scale" id="scale-P1"></div>
+            </div>
+
+            <div class="player-side" id="P2">
+                <h2 style="color: var(--p2-color)">Mage Bleu (P2)</h2>
+                <div class="powers">
+                    <button class="btn-gel" onclick="pouvoir('gel', 'P2')">❄️ Gel P1</button>
+                    <button class="btn-vol" onclick="pouvoir('vol', 'P2')">⚡ Vol P1</button>
+                </div>
+                <div class="score">Prestige : <span id="score-P2">0</span></div>
+                <div class="timeline-scale" id="scale-P2"></div>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
