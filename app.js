@@ -1,45 +1,99 @@
 let currentEvent = null;
 let timelines = { P1: [], P2: [] };
 let scores = { P1: 0, P2: 0 };
-let streaks = { P1: 0, P2: 0 };
-let globalTime = 120; 
-let timerId = null;
-let isPaused = false;
+let currentPlayer = 'P1';
+let turnTime = 15;
+let turnTimer = null;
+let gameActive = false;
+let evenementsPoses = [];
 
-// Démarrage du jeu via le bouton
-function startGame() {
-    document.getElementById('start-screen').style.opacity = "0";
+function introAnimation() {
+    document.getElementById('start-screen').style.opacity = '0';
     setTimeout(() => {
-        document.getElementById('start-screen').style.display = "none";
-        fetchEvent();
-        startGlobalTimer();
-    }, 500);
+        document.getElementById('start-screen').style.display = 'none';
+        const vs = document.getElementById('vs-screen');
+        vs.style.display = 'flex';
+        setTimeout(() => vs.style.opacity = '1', 50);
+        setTimeout(() => {
+            vs.style.opacity = '0';
+            setTimeout(() => {
+                vs.style.display = 'none';
+                gameActive = true;
+                fetchEvent();
+                startTurnTimer();
+            }, 800);
+        }, 2500);
+    }, 800);
 }
 
 async function fetchEvent() {
-    try {
-        const res = await fetch('get_event.php');
-        currentEvent = await res.json();
+    const card = document.getElementById('oracle-card');
+    const res = await fetch('get_event.php');
+    const nouvelEvenement = await res.json();
+    if (evenementsPoses.includes(nouvelEvenement.titre)) {
+        return fetchEvent();
+    }
+    currentEvent = nouvelEvenement;
+    card.classList.remove('reveal', 'fixed-top');
+    card.style.opacity = "0";
+    card.style.transform = "scale(0)";
+    setTimeout(() => {
         document.getElementById('current-event').innerText = currentEvent.titre;
-    } catch (e) {
-        console.error("Erreur de chargement des données.");
+        card.classList.add('reveal');
+        setTimeout(() => {
+            card.classList.remove('reveal');
+            card.classList.add('fixed-top');
+        }, 1200);
+    }, 200);
+}
+
+function startTurnTimer() {
+    if (turnTimer) clearInterval(turnTimer);
+    turnTime = 15;
+    updateVisualTurns();
+    turnTimer = setInterval(() => {
+        if (!gameActive) return;
+        turnTime -= 0.1;
+        document.getElementById(`timer-bar-${currentPlayer}`).style.width = (turnTime / 15) * 100 + "%";
+        if (turnTime <= 0) nextTurn();
+    }, 100);
+}
+
+function updateVisualTurns() {
+    document.getElementById('P1').className = (currentPlayer === 'P1') ? 'player-side active-turn' : 'player-side disabled-turn';
+    document.getElementById('P2').className = (currentPlayer === 'P2') ? 'player-side active-turn' : 'player-side disabled-turn';
+}
+
+function nextTurn() {
+    currentPlayer = (currentPlayer === 'P1') ? 'P2' : 'P1';
+    fetchEvent();
+    startTurnTimer();
+}
+
+function jouer(pId, index) {
+    if (!gameActive || pId !== currentPlayer) return;
+    const list = timelines[pId];
+    let ok = true;
+    if (index > 0 && list[index-1].date > currentEvent.date) ok = false;
+    if (index < list.length && list[index].date < currentEvent.date) ok = false;
+    if (ok) {
+        evenementsPoses.push(currentEvent.titre);
+        list.splice(index, 0, currentEvent);
+        scores[pId]++;
+        document.getElementById(`score-${pId}`).innerText = scores[pId];
+        render(pId);
+        if (scores[pId] >= 5) showWinner(pId);
+        else nextTurn();
+    } else {
+        alert("Mauvaise époque !");
+        nextTurn();
     }
 }
 
-function startGlobalTimer() {
-    if (timerId) clearInterval(timerId);
-    timerId = setInterval(() => {
-        if (!isPaused) {
-            globalTime -= 0.1;
-            const percentage = (globalTime / 120) * 100;
-            document.getElementById('timer-bar').style.width = percentage + "%";
-            
-            if (globalTime <= 0) {
-                clearInterval(timerId);
-                showEndScreen();
-            }
-        }
-    }, 100);
+function gelerTemps(pId) {
+    if (pId !== currentPlayer) return;
+    turnTime = Math.min(turnTime + 7, 15);
+    document.getElementById(`btn-time-${pId}`).style.display = 'none';
 }
 
 function render(pId) {
@@ -47,63 +101,19 @@ function render(pId) {
     scale.innerHTML = '';
     timelines[pId].forEach((ev, i) => {
         scale.innerHTML += `<div class="drop-zone" onclick="jouer('${pId}', ${i})">+</div>`;
-        scale.innerHTML += `<div class="bubble"><strong>${ev.titre}</strong><br>${ev.date}</div>`;
+        scale.innerHTML += `<div class="bubble">${ev.titre}<br><small>${ev.date}</small></div>`;
     });
     scale.innerHTML += `<div class="drop-zone" onclick="jouer('${pId}', ${timelines[pId].length})">+</div>`;
 }
 
-function animateScore(pId) {
-    const scoreEl = document.getElementById(`score-${pId}`);
-    scoreEl.classList.add('pop');
-    setTimeout(() => scoreEl.classList.remove('pop'), 300);
+function showWinner(pId) {
+    gameActive = false;
+    clearInterval(turnTimer);
+    document.getElementById('winner-text').innerText = `Le Joueur ${(pId==='P1'?1:2)} a maîtrisé le temps !`;
+    document.getElementById('end-screen').style.display = 'flex';
 }
 
-function jouer(pId, index) {
-    const list = timelines[pId];
-    let ok = true;
-    if (index > 0 && list[index-1].date > currentEvent.date) ok = false;
-    if (index < list.length && list[index].date < currentEvent.date) ok = false;
-
-    if (ok) {
-        list.splice(index, 0, currentEvent);
-        scores[pId]++;
-        streaks[pId]++;
-        
-        document.getElementById(`score-${pId}`).innerText = scores[pId];
-        animateScore(pId);
-        
-        // Apparition du bouton spécial si 3 bonnes réponses de suite
-        if (streaks[pId] >= 3) {
-            document.getElementById(`btn-time-${pId}`).style.display = "inline-block";
-        }
-        
-        render(pId);
-        fetchEvent();
-    } else {
-        streaks[pId] = 0;
-        document.getElementById(`btn-time-${pId}`).style.display = "none";
-        alert("Faux ! La série est brisée.");
-    }
-}
-
-function pouvoir(type, lanceur) {
-    const cible = lanceur === 'P1' ? 'P2' : 'P1';
-    if (type === 'gel') {
-        document.getElementById(cible).classList.add('frozen');
-        setTimeout(() => document.getElementById(cible).classList.remove('frozen'), 5000);
-    } else if (type === 'temps') {
-        isPaused = true;
-        document.getElementById(`btn-time-${lanceur}`).style.display = "none";
-        streaks[lanceur] = 0;
-        setTimeout(() => isPaused = false, 8000); // Chrono stoppé 8 secondes
-    }
-}
-
-function showEndScreen() {
-    const winner = scores.P1 > scores.P2 ? "MAGE VERT TRIOMPHE" : "MAGE BLEU TRIOMPHE";
-    document.getElementById('winner-text').innerText = winner;
-    document.getElementById('final-scores').innerHTML = `<h2>SCORE: ${scores.P1} - ${scores.P2}</h2>`;
-    document.getElementById('end-screen').style.display = "flex";
-}
-
-window.onload = () => { render('P1'); render('P2'); };
+window.onload = () => {
+    render('P1');
+    render('P2');
+};
