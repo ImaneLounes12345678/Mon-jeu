@@ -1,104 +1,214 @@
 :root {
+    --p1-color: #ff4b2b;
+    --p2-color: #00d2ff;
     --gold: #f1c40f;
-    --dark: #05050a;
-    --p1-color: #00ff88;
-    --p2-color: #00d4ff;
-    --glass: rgba(255, 255, 255, 0.05);
+    --bg-dark: #05050a;
 }
 
-body { 
-    background: var(--dark); 
-    color: white; 
-    font-family: 'Orbitron', sans-serif; 
-    margin: 0; 
+body {
+    background: var(--bg-dark);
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    margin: 0;
     overflow: hidden;
-    background-image: radial-gradient(circle at center, #1a1a2e 0%, #05050a 100%);
 }
 
-/* Overlays (Accueil & Fin) */
 .overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(5, 5, 10, 0.95);
-    display: flex; flex-direction: column; justify-content: center;
-    align-items: center; z-index: 1000; transition: 0.5s;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: 0.8s ease;
 }
 
-.glow-text {
-    font-size: 4rem; color: var(--gold);
-    text-shadow: 0 0 20px var(--gold);
-    margin-bottom: 20px; animation: pulse 2s infinite;
+#start-screen {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                url('https://cdn.gamma.app/z66k063otepu16i/generated-images/pm3M0ub1nIkmujFG.png');
+    background-size: cover;
 }
 
-.btn-main {
-    padding: 15px 40px; background: transparent; border: 2px solid var(--gold);
-    color: var(--gold); font-family: 'Orbitron'; cursor: pointer;
-    transition: 0.3s; letter-spacing: 2px;
+.main-title {
+    font-size: 6rem;
+    color: var(--gold);
+    text-shadow: 0 0 30px var(--gold);
+    font-family: 'Bangers';
 }
 
-.btn-main:hover { background: var(--gold); color: black; box-shadow: 0 0 30px var(--gold); }
-
-/* Oracle & Timer */
-.oracle-zone { height: 25%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-
-#current-event {
-    padding: 20px 50px; border-radius: 50px; background: var(--glass);
-    border: 2px solid var(--gold); font-size: 1.5rem; text-align: center;
-    box-shadow: 0 0 30px rgba(241, 196, 15, 0.1);
+.play-button {
+    padding: 15px 50px;
+    font-size: 2rem;
+    background: var(--gold);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: 'Bangers';
 }
 
-.timer-wrapper { width: 400px; height: 6px; background: rgba(255,255,255,0.1); margin-top: 20px; border-radius: 3px; overflow: hidden; }
-#timer-bar { height: 100%; background: linear-gradient(to right, #e74c3c, var(--gold)); width: 100%; }
-
-/* Duel Zone */
-.duel-zone { display: flex; height: 75%; }
-.player-side { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; transition: 0.5s; }
-
-.p1-title { color: var(--p1-color); text-shadow: 0 0 10px var(--p1-color); }
-.p2-title { color: var(--p2-color); text-shadow: 0 0 10px var(--p2-color); }
-
-.score-box { font-size: 1.2rem; margin: 15px 0; padding: 10px 20px; background: var(--glass); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); }
-.score-num { color: var(--gold); display: inline-block; transition: 0.3s; }
-
-/* Animation Pop du score */
-.pop { transform: scale(2); color: #fff; text-shadow: 0 0 15px var(--gold); }
-
-/* Boutons de pouvoirs */
-.btn-p {
-    padding: 10px 15px; margin: 5px; border: 1px solid rgba(255,255,255,0.2); 
-    background: transparent; color: white; cursor: pointer; font-family: 'Orbitron'; font-size: 0.7rem;
-}
-.btn-p:hover { background: white; color: black; }
-
-.btn-special { 
-    border-color: #9b59b6; color: #9b59b6; 
-    animation: glitch 0.3s infinite; 
-    box-shadow: 0 0 10px #9b59b6; 
+.vs-container {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+    font-family: 'Bangers';
 }
 
-/* Timeline */
+.vs-player {
+    font-size: 6rem;
+    color: white;
+}
+
+.vs-text {
+    font-size: 10rem;
+    color: var(--gold);
+    animation: pulse 0.6s infinite alternate;
+}
+
+@keyframes pulse {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.1);
+    }
+}
+
+.duel-zone {
+    display: flex;
+    width: 100vw;
+    height: calc(100vh - 200px);
+}
+
+.player-side {
+    flex: 0 0 50%;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: 0.5s;
+}
+
+#P1 {
+    background: linear-gradient(to bottom, rgba(255, 0, 0, 0.4), rgba(0, 0, 0, 0.9)), 
+                url('https://i.pinimg.com/736x/64/69/60/6469608a3003183d6884af31bd1d7047.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+#P2 {
+    background: linear-gradient(to bottom, rgba(0, 100, 255, 0.4), rgba(0, 0, 0, 0.9)), 
+                url('https://png.pngtree.com/thumb_back/fh260/background/20251214/pngtree-anime-soccer-player-charged-with-electric-energy-image_20827237.webp');
+    background-size: cover;
+    background-position: center;
+}
+
+.content-wrapper {
+    position: relative;
+    z-index: 2;
+    padding: 20px;
+    width: 100%;
+    text-align: center;
+}
+
+.oracle-container {
+    height: 180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.oracle-card {
+    background: rgba(10, 10, 25, 0.95);
+    border: 3px solid var(--gold);
+    border-radius: 15px;
+    padding: 20px;
+    min-width: 380px;
+    text-align: center;
+    opacity: 0;
+    transform: scale(0);
+    transition: 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.oracle-card.reveal {
+    opacity: 1 !important;
+    transform: scale(1.2) !important;
+}
+
+.oracle-card.fixed-top {
+    opacity: 1 !important;
+    transform: scale(1) !important;
+}
+
 .timeline-scale {
-    width: 95%; height: 250px; display: flex; align-items: center; gap: 15px;
-    padding: 20px; overflow-x: auto; border-top: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    overflow-x: auto;
+    padding: 20px;
+    min-height: 150px;
+    justify-content: center;
 }
 
 .bubble {
-    min-width: 100px; height: 100px; background: var(--glass);
-    border: 2px solid var(--gold); border-radius: 15px;
-    display: flex; flex-direction: column; justify-content: center;
-    align-items: center; text-align: center; font-size: 0.7rem;
-    animation: slideIn 0.4s ease-out;
+    min-width: 120px;
+    background: white;
+    color: black;
+    border-radius: 10px;
+    padding: 10px;
+    border: 3px solid var(--gold);
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
 }
 
 .drop-zone {
-    min-width: 40px; height: 40px; border: 2px dashed rgba(255,255,255,0.2);
-    border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; color: var(--gold); font-weight: bold;
+    min-width: 35px;
+    height: 35px;
+    border: 2px dashed var(--gold);
+    border-radius: 50%;
+    cursor: pointer;
+    background: rgba(0,0,0,0.3);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-.drop-zone:hover { border-color: var(--gold); background: rgba(241, 196, 15, 0.1); }
 
-/* Animations */
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-@keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes glitch { 0% { transform: translate(0); } 50% { transform: translate(-2px, 1px); } 100% { transform: translate(2px, -1px); } }
+.player-timer {
+    width: 80%;
+    height: 12px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 6px;
+    margin: 15px auto;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.2);
+}
 
-.frozen { filter: blur(4px) grayscale(1); pointer-events: none; opacity: 0.5; }
+.inner-bar {
+    height: 100%;
+    width: 100%;
+    transition: width 0.1s linear;
+}
+
+#P1 .inner-bar {
+    background: var(--p1-color);
+    box-shadow: 0 0 10px var(--p1-color);
+}
+
+#P2 .inner-bar {
+    background: var(--p2-color);
+    box-shadow: 0 0 10px var(--p2-color);
+}
+
+.disabled-turn {
+    filter: grayscale(0.8) brightness(0.4);
+    pointer-events: none;
+}
+
+.active-turn {
+    filter: none;
+    box-shadow: inset 0 0 50px rgba(255,255,255,0.1);
+}
